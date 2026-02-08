@@ -1,0 +1,3 @@
+---
+# Default logs to collect (override via profile)
+logs: []

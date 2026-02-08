@@ -1,0 +1,65 @@
+---
+- name: Gather OS information
+  shell: |
+    cat /etc/os-release | grep -E "^(NAME|VERSION)="
+  register: os_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get kernel version
+  shell: uname -r
+  register: kernel_version
+  changed_when: false
+  ignore_errors: true
+
+- name: Get system uptime
+  shell: uptime
+  register: uptime_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get CPU info
+  shell: lscpu | grep -E "^(CPU\(s\):|Model name|Architecture)"
+  register: cpu_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get memory usage
+  shell: free -h
+  register: memory_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get disk usage
+  shell: df -h
+  register: disk_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get top processes by CPU
+  shell: ps aux --sort=-%cpu | head -10
+  register: top_cpu
+  changed_when: false
+  ignore_errors: true
+
+- name: Get top processes by memory
+  shell: ps aux --sort=-%mem | head -10
+  register: top_mem
+  changed_when: false
+  ignore_errors: true
+
+- name: Set linux_base content fact
+  set_fact:
+    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\n'), '', 'Memory:', memory_info.stdout_lines | join('\n'), '', 'Disk:', disk_info.stdout_lines | join('\n'), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\n')] | join('\n') }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Save collected data to file
+  delegate_to: localhost
+  run_once: true
+  copy:
+    dest: "{{ output_dir }}/linux_base.txt"
+    content: "{{ linux_base_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

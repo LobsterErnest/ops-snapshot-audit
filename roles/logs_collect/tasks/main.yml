@@ -1,0 +1,44 @@
+---
+- name: Collect defined logs
+  block:
+    - name: Read each log file
+      shell: tail -{{ item.lines | default(50) }} {{ item.path }}
+      register: log_contents
+      loop: "{{ profile.logs }}"
+      changed_when: false
+      ignore_errors: true
+
+    - name: Generate logs collect content
+      delegate_to: localhost
+      run_once: true
+      shell: |
+        cat << 'EOF'
+        {% for result in log_contents.results %}
+        === {{ result.item.path }} (last {{ result.item.lines | default(50) }} lines) ===
+        {% if result.failed %}
+        Log not found
+        {% else %}
+        {{ result.stdout }}
+        {% endif %}
+        {% endfor %}
+        EOF
+      args:
+        executable: /bin/bash
+      register: logs_collect_content_raw
+      ignore_errors: true
+      failed_when: false
+
+    - name: Set logs collect content fact
+      set_fact:
+        logs_collect_content: "{{ logs_collect_content_raw.stdout }}"
+
+    - name: Save log contents
+      delegate_to: localhost
+      run_once: true
+      copy:
+        dest: "{{ output_dir }}/logs_collect.txt"
+        content: "{{ logs_collect_content }}"
+        mode: '0644'
+      ignore_errors: true
+      failed_when: false
+  when: profile.logs is defined

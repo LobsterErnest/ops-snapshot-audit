@@ -1,0 +1,51 @@
+OS Info:
+NAME="Ubuntu"
+VERSION="24.04.3 LTS (Noble Numbat)"
+
+Kernel: 6.8.0-94-generic
+
+Uptime:  03:55:49 up 14:40,  0 user,  load average: 0.83, 0.47, 0.40
+
+CPU Info:
+Architecture:                         x86_64
+CPU(s):                               4
+Model name:                           AMD EPYC Processor (with IBPB)
+
+Memory:
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.5Gi       5.8Gi       1.1Mi       802Mi       6.3Gi
+Swap:             0B          0B          0B
+
+Disk:
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           795M  1.1M  794M   1% /run
+/dev/sda1        72G   22G   51G  30% /
+tmpfs           3.9G   20K  3.9G   1% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/sda16      881M  117M  703M  15% /boot
+/dev/sda15      105M  6.2M   99M   6% /boot/efi
+tmpfs           795M   12K  795M   1% /run/user/0
+
+Top CPU Processes:
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root       21842 97.2  0.3  40720 28280 ?        S    03:55   0:00 /usr/bin/python3.12 /root/.ansible/tmp/ansible-tmp-1770519351.7164006-21823-117747799208083/AnsiballZ_command.py
+root       19297 30.0  4.1 74328852 337664 pts/0 Ssl+ 03:43   3:34 /root/.opencode/bin/opencode run Arregla el reporte vacío en 'ops-snapshot-audit'. \n\nPROBLEMA: El rol 'reporting' no recibe los datos recolectados en roles anteriores.\n\nSOLUCIÓN: \n1. En 'playbooks/snapshot.yml', registra las salidas de cada rol en variables globales o pásalas explícitamente al rol 'reporting'.\n2. Asegúrate de que la variable 'files' que espera la plantilla 'summary.md.j2' se construya correctamente con el contenido real de los comandos ejecutados (uptime, df, logs, etc.).
+root       21500 22.5  0.6 144044 54688 ?        Sl   03:55   0:02 /root/.openclaw/workspace/projects/ops-snapshot-audit/venv/bin/python3 ./venv/bin/ansible-playbook -i inventories/example.yml playbooks/snapshot.yml
+root       21823  4.4  0.5 145252 44772 ?        Ss   03:55   0:00 /root/.openclaw/workspace/projects/ops-snapshot-audit/venv/bin/python3 ./venv/bin/ansible-playbook -i inventories/example.yml playbooks/snapshot.yml
+root        1030  1.1  6.5 23049900 533000 ?     Ssl  Feb07  10:24 openclaw-gateway
+root       19343  0.9  1.0 73985760 88132 pts/0  Sl+  03:44   0:06 /root/.opencode/bin/opencode run /root/.local/share/opencode/bin/node_modules/yaml-language-server/out/server/src/server.js --stdio
+root         898  0.2  0.5 1940804 46584 ?       Ssl  Feb07   2:06 /usr/bin/containerd
+root         860  0.2  0.6 936156 53500 ?        Ssl  Feb07   2:05 /usr/bin/python3 /usr/bin/fail2ban-server -xf start
+root          17  0.0  0.0      0     0 ?        I    Feb07   0:51 [rcu_preempt]
+
+Top Memory Processes:
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root        1030  1.1  6.5 23049900 533000 ?     Ssl  Feb07  10:24 openclaw-gateway
+root       19297 29.9  4.1 74328852 337664 pts/0 Ssl+ 03:43   3:34 /root/.opencode/bin/opencode run Arregla el reporte vacío en 'ops-snapshot-audit'. \n\nPROBLEMA: El rol 'reporting' no recibe los datos recolectados en roles anteriores.\n\nSOLUCIÓN: \n1. En 'playbooks/snapshot.yml', registra las salidas de cada rol en variables globales o pásalas explícitamente al rol 'reporting'.\n2. Asegúrate de que la variable 'files' que espera la plantilla 'summary.md.j2' se construya correctamente con el contenido real de los comandos ejecutados (uptime, df, logs, etc.).
+root       19343  0.9  1.0 73985760 88132 pts/0  Sl+  03:44   0:06 /root/.opencode/bin/opencode run /root/.local/share/opencode/bin/node_modules/yaml-language-server/out/server/src/server.js --stdio
+root        1085  0.0  1.0 2061784 81772 ?       Ssl  Feb07   0:18 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+root       21500 21.7  0.6 144044 54688 ?        Sl   03:55   0:02 /root/.openclaw/workspace/projects/ops-snapshot-audit/venv/bin/python3 ./venv/bin/ansible-playbook -i inventories/example.yml playbooks/snapshot.yml
+root         860  0.2  0.6 936156 53500 ?        Ssl  Feb07   2:05 /usr/bin/python3 /usr/bin/fail2ban-server -xf start
+root         898  0.2  0.5 1940804 46584 ?       Ssl  Feb07   2:06 /usr/bin/containerd
+root       21851  4.4  0.5 145248 44648 ?        Ss   03:55   0:00 /root/.openclaw/workspace/projects/ops-snapshot-audit/venv/bin/python3 ./venv/bin/ansible-playbook -i inventories/example.yml playbooks/snapshot.yml
+root        1970  0.0  0.5 478168 40832 ?        Ssl  Feb07   0:06 /usr/libexec/fwupd/fwupd

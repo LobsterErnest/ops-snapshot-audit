@@ -1,0 +1,39 @@
+---
+- name: Check status of defined services
+  block:
+    - name: Get service status
+      shell: systemctl is-active {{ item }}
+      register: service_status
+      loop: "{{ profile.services }}"
+      failed_when: false
+      changed_when: false
+
+    - name: Generate systemd checks content
+      delegate_to: localhost
+      run_once: true
+      shell: |
+        cat << 'EOF'
+        {% for item in service_status.results %}
+        Service: {{ item.item }} - Status: {{ item.stdout }}
+        {% endfor %}
+        EOF
+      args:
+        executable: /bin/bash
+      register: systemd_checks_content_raw
+      ignore_errors: true
+      failed_when: false
+
+    - name: Set systemd checks content fact
+      set_fact:
+        systemd_checks_content: "{{ systemd_checks_content_raw.stdout }}"
+
+    - name: Save service statuses
+      delegate_to: localhost
+      run_once: true
+      copy:
+        dest: "{{ output_dir }}/systemd_checks.txt"
+        content: "{{ systemd_checks_content }}"
+        mode: '0644'
+      ignore_errors: true
+      failed_when: false
+  when: profile.services is defined

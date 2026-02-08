@@ -1,0 +1,34 @@
+---
+- name: Linux Snapshot Audit
+  hosts: all
+  gather_facts: true
+  vars:
+    timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+    output_dir: "output/{{ inventory_hostname }}/{{ timestamp }}"
+    profile_file: "{{ playbook_dir }}/../profiles/mipro-linux.yml"
+    profile: "{{ lookup('file', profile_file) | from_yaml }}"
+  
+  pre_tasks:
+    - name: Ensure output directory exists
+      delegate_to: localhost
+      run_once: true
+      shell: mkdir -p "{{ output_dir }}" && chmod 0755 "{{ output_dir }}"
+      changed_when: false
+      ignore_errors: true
+      failed_when: false
+
+  roles:
+    - role: linux_base
+    - role: systemd_checks
+    - role: nginx
+      when: "'nginx' in profile.services"
+    - role: logs_collect
+    - role: updates_readonly
+    - role: reporting
+
+  post_tasks:
+    - name: Display summary location
+      delegate_to: localhost
+      run_once: true
+      debug:
+        msg: "Snapshot report saved to {{ output_dir }}/summary.md"

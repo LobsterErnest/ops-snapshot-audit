@@ -1,0 +1,4 @@
+---
+# Default variables for linux_base role
+collect_top_processes: true
+top_process_count: 10

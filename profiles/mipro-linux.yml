@@ -1,0 +1,16 @@
+---
+name: mipro-linux
+description: Profile for standard Linux servers with nginx and mysql
+
+services:
+  - sshd
+  - cron
+
+logs:
+  - path: /var/log/syslog
+    lines: 50
+
+thresholds:
+  disk_usage_warn: 80
+  memory_usage_warn: 90
+  load_average_warn: 2.0

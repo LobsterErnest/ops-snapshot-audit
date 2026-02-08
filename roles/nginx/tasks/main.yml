@@ -1,0 +1,69 @@
+---
+- name: Check if nginx is installed
+  shell: which nginx
+  register: nginx_installed
+  changed_when: false
+  ignore_errors: true
+
+- name: Validate nginx configuration
+  shell: nginx -t
+  register: nginx_test
+  changed_when: false
+  ignore_errors: true
+  when: nginx_installed.rc == 0
+
+- name: Get nginx version
+  shell: nginx -v 2>&1
+  register: nginx_version
+  changed_when: false
+  ignore_errors: true
+  when: nginx_installed.rc == 0
+
+- name: Get last lines of access log
+  shell: tail -100 {{ nginx_access_log | default('/var/log/nginx/access.log') }}
+  register: nginx_access_tail
+  changed_when: false
+  ignore_errors: true
+  when: nginx_installed.rc == 0
+
+- name: Get last lines of error log
+  shell: tail -100 {{ nginx_error_log | default('/var/log/nginx/error.log') }}
+  register: nginx_error_tail
+  changed_when: false
+  ignore_errors: true
+  when: nginx_installed.rc == 0
+
+- name: Generate nginx content
+  delegate_to: localhost
+  run_once: true
+  shell: |
+    cat << 'EOF'
+    NGINX Installed: {{ nginx_installed.rc == 0 }}
+    {% if nginx_installed.rc == 0 %}
+    Version: {{ nginx_version.stdout }}
+    Config test: {{ nginx_test.stdout_lines | join('\n') }}
+    Access log (last 100 lines):
+    {{ nginx_access_tail.stdout_lines | join('\n') }}
+    Error log (last 100 lines):
+    {{ nginx_error_tail.stdout_lines | join('\n') }}
+    {% endif %}
+    EOF
+  args:
+    executable: /bin/bash
+  register: nginx_content_raw
+  ignore_errors: true
+  failed_when: false
+
+- name: Set nginx content fact
+  set_fact:
+    nginx_content: "{{ nginx_content_raw.stdout }}"
+
+- name: Save nginx info
+  delegate_to: localhost
+  run_once: true
+  copy:
+    dest: "{{ output_dir }}/nginx.txt"
+    content: "{{ nginx_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

@@ -1,0 +1,39 @@
+---
+- name: Gather collected data for reporting
+  delegate_to: localhost
+  run_once: true
+  vars:
+    linux_base_file: "{{ output_dir }}/linux_base.txt"
+    systemd_checks_file: "{{ output_dir }}/systemd_checks.txt"
+    nginx_file: "{{ output_dir }}/nginx.txt"
+    logs_collect_file: "{{ output_dir }}/logs_collect.txt"
+    updates_readonly_file: "{{ output_dir }}/updates_readonly.txt"
+    file_names:
+      - "{{ linux_base_file }}"
+      - "{{ systemd_checks_file }}"
+      - "{{ nginx_file }}"
+      - "{{ logs_collect_file }}"
+      - "{{ updates_readonly_file }}"
+    content_vars:
+      - "{{ linux_base_content | default('') }}"
+      - "{{ systemd_checks_content | default('') }}"
+      - "{{ nginx_content | default('') }}"
+      - "{{ logs_collect_content | default('') }}"
+      - "{{ updates_readonly_content | default('') }}"
+  block:
+    - name: Initialize file contents list
+      set_fact:
+        file_contents_results: []
+
+    - name: Add items to file contents list
+      set_fact:
+        file_contents_results: "{{ file_contents_results + [{'item': file_names[item | int], 'found': (content_vars[item | int] | length > 0), 'content': (content_vars[item | int] | b64encode)}] }}"
+      loop: "{{ range(0, 5) | list }}"
+
+    - name: Generate summary report
+      template:
+        src: summary.md.j2
+        dest: "{{ output_dir }}/summary-{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}.md"
+        mode: '0644'
+      vars:
+        files: "{{ file_contents_results }}"

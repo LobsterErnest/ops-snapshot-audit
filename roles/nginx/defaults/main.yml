@@ -1,0 +1,4 @@
+---
+# Default nginx log paths
+nginx_access_log: "/var/log/nginx/access.log"
+nginx_error_log: "/var/log/nginx/error.log"

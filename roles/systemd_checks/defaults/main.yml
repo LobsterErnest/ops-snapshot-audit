@@ -1,0 +1,3 @@
+---
+# Default services to check (override via profile)
+services: []

@@ -1,0 +1,47 @@
+---
+- name: Check for available updates
+  shell: |
+    {% if ansible_pkg_mgr == 'apt' %}
+    apt list --upgradable 2>/dev/null | grep -v "Listing..."
+    {% elif ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf' %}
+    {{ ansible_pkg_mgr }} check-update --quiet 2>/dev/null || true
+    {% else %}
+    echo "Unsupported package manager: {{ ansible_pkg_mgr }}"
+    {% endif %}
+  register: pkg_updates
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Generate updates readonly content
+  delegate_to: localhost
+  run_once: true
+  shell: |
+    cat << 'EOF'
+    Package Manager: {{ ansible_pkg_mgr | default('Unknown') }}
+    {% if pkg_updates.rc == 0 and pkg_updates.stdout | length > 0 %}
+    Updates:
+    {{ pkg_updates.stdout_lines | join('\n') }}
+    {% else %}
+    No updates available or package manager not supported.
+    {% endif %}
+    EOF
+  args:
+    executable: /bin/bash
+  register: updates_readonly_content_raw
+  ignore_errors: true
+  failed_when: false
+
+- name: Set updates readonly content fact
+  set_fact:
+    updates_readonly_content: "{{ updates_readonly_content_raw.stdout }}"
+
+- name: Save updates info
+  delegate_to: localhost
+  run_once: true
+  copy:
+    dest: "{{ output_dir }}/updates_readonly.txt"
+    content: "{{ updates_readonly_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false
