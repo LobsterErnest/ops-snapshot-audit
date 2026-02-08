@@ -48,9 +48,27 @@
   changed_when: false
   ignore_errors: true
 
+- name: Get listening ports
+  shell: ss -tulpn
+  register: listening_ports
+  changed_when: false
+  ignore_errors: true
+
+- name: Check ESET service status
+  shell: systemctl status eset 2>/dev/null || echo 'ESET not found'
+  register: eset_status
+  changed_when: false
+  ignore_errors: true
+
+- name: List all services
+  shell: systemctl list-units --type=service --all
+  register: all_services
+  changed_when: false
+  ignore_errors: true
+
 - name: Set linux_base content fact
   set_fact:
-    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\n'), '', 'Memory:', memory_info.stdout_lines | join('\n'), '', 'Disk:', disk_info.stdout_lines | join('\n'), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\n')] | join('\n') }}"
+    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\n'), '', 'Memory:', memory_info.stdout_lines | join('\n'), '', 'Disk:', disk_info.stdout_lines | join('\n'), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\n'), '', 'Listening Ports:', listening_ports.stdout_lines | default([]) | join('\n'), '', 'ESET Status:', eset_status.stdout_lines | default([]) | join('\n'), '', 'All Services:', all_services.stdout_lines | default([]) | join('\n')] | join('\n') }}"
   delegate_to: localhost
   run_once: true
 

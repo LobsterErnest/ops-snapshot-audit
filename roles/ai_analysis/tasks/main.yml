@@ -1,0 +1,76 @@
+---
+- name: Collect data from other roles for AI analysis
+  delegate_to: localhost
+  run_once: true
+  vars:
+    combined_data: |
+      === Linux Base ===
+      {{ linux_base_content | default('No data') }}
+
+      === Systemd Checks ===
+      {{ systemd_checks_content | default('No data') }}
+
+      === NGINX Check ===
+      {{ nginx_content | default('No data') }}
+
+      === Logs Collected ===
+      {{ logs_collect_content | default('No data') }}
+
+      === Updates Status ===
+      {{ updates_readonly_content | default('No data') }}
+  set_fact:
+    ai_combined_data: "{{ combined_data }}"
+
+- name: Check if OpenAI API key is provided
+  delegate_to: localhost
+  run_once: true
+  fail:
+    msg: "OpenAI API key not provided. Set 'openai_api_key' variable to enable AI analysis."
+  when: openai_api_key is not defined or openai_api_key == ''
+
+- name: Call OpenAI API for SRE analysis
+  delegate_to: localhost
+  run_once: true
+  uri:
+    url: "https://api.openai.com/v1/chat/completions"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ openai_api_key }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      model: "gpt-3.5-turbo"
+      messages:
+        - role: "system"
+          content: "You are a Senior Site Reliability Engineer (SRE) performing a system audit. Analyze the following snapshot data from a Linux server. Identify anomalies (e.g., services down, error logs, high resource usage, security issues). Provide concise diagnostic steps (short actionable items) in bullet points. Keep response under 300 words."
+        - role: "user"
+          content: "{{ ai_combined_data }}"
+      temperature: 0.2
+      max_tokens: 500
+  register: openai_response
+  ignore_errors: true
+  failed_when: false
+
+- name: Extract AI analysis from response
+  delegate_to: localhost
+  run_once: true
+  set_fact:
+    ai_analysis_content: "{{ openai_response.json.choices[0].message.content if openai_response.json is defined and openai_response.json.choices[0].message.content is defined else 'AI analysis failed or no response.' }}"
+  when: openai_response.json is defined
+
+- name: Set default AI analysis content on failure
+  delegate_to: localhost
+  run_once: true
+  set_fact:
+    ai_analysis_content: "AI analysis could not be performed. Error: {{ openai_response.msg | default('Unknown error') }}"
+  when: openai_response.json is not defined
+
+- name: Save AI analysis to file
+  delegate_to: localhost
+  run_once: true
+  copy:
+    dest: "{{ output_dir }}/ai_analysis.txt"
+    content: "{{ ai_analysis_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

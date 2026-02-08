@@ -25,8 +25,8 @@
 
 ## Findings
 
-{% set descriptions = ['System Information', 'Service Status', 'NGINX Check', 'Logs Collected', 'Updates Status'] %}
-{% for i in range(5) %}
+ {% set descriptions = ['System Information', 'Service Status', 'NGINX Check', 'Logs Collected', 'Updates Status', 'AI Analysis'] %}
+ {% for i in range(6) %}
 {% if files and files[i] is defined %}
 {% set found = files[i]['found'] | default(false) %}
 {% else %}
@@ -34,9 +34,16 @@
 {% endif %}
 - **{{ descriptions[i] }}:** {% if found %}OK{% else %}MISSING{% endif %}
 
-{% endfor %}
+ {% endfor %}
 
-## Recommendations
+ ## AI Analysis
+ {% if files and files[5] is defined and files[5]['found'] %}
+ {{ files[5]['content'] | b64decode }}
+ {% else %}
+ *AI analysis not available.*
+ {% endif %}
+
+ ## Recommendations
 
 - Review any missing data above.
 - Check service statuses for any inactive services.

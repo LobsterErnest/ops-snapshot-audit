@@ -13,6 +13,28 @@ This toolkit runs exclusively in “read‑only” mode:
 
 All commands are safe, non‑destructive and can be run on production systems without risk.
 
+## AI-Powered Analysis
+
+Adds intelligent analysis of audit data using OpenAI's GPT models. When an OpenAI API key is provided, the `ai_analysis` role processes collected data and generates actionable insights, anomaly detection, and diagnostic recommendations.
+
+### Configuration
+Set the `openai_api_key` variable in your inventory or pass it as an extra var:
+
+```yaml
+# inventory.yml
+all:
+  vars:
+    openai_api_key: "your-api-key-here"
+```
+
+or via command line:
+
+```bash
+ansible-playbook -i inventory.yml -e "openai_api_key=your-api-key-here" playbooks/snapshot.yml
+```
+
+The AI analysis will only run when the key is provided and non‑empty.
+
 ## Requirements
 
 - Python 3.6+
@@ -45,6 +67,7 @@ ops‑snapshot‑audit/
 │   ├── nginx/                # Validate config and tail logs
 │   ├── logs_collect/         # Generic log collection
 │   ├── updates_readonly/     # List pending updates (no installation)
+│   ├── ai_analysis/          # AI-powered analysis of audit data
 │   └── reporting/            # Generate summary Markdown report
 ├── profiles/
 │   └── mipro‑linux.yml       # Example profile with services, logs, thresholds
@@ -107,6 +130,7 @@ After each run, a directory is created under `output/<hostname>/<date>/` contain
 - `nginx.txt` – NGINX config and logs (if applicable)
 - `logs_collect.txt` – Tail of defined logs
 - `updates_readonly.txt` – Pending package updates
+- `ai_analysis.txt` – AI analysis summary
 - `summary.md` – Consolidated Markdown report
 
 ## License

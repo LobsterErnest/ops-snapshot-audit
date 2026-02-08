@@ -24,6 +24,8 @@
       when: "'nginx' in profile.services"
     - role: logs_collect
     - role: updates_readonly
+    - role: ai_analysis
+      when: openai_api_key is defined and openai_api_key != ''
     - role: reporting
 
   post_tasks:
