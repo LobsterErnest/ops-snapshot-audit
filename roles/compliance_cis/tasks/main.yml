@@ -1,0 +1,61 @@
+---
+- name: Get SSH effective config
+  shell: sshd -T 2>/dev/null | grep -E '^(permitrootlogin|passwordauthentication|permitemptypasswords)'
+  register: sshd_effective
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Get password policy settings
+  shell: |
+    grep -E '^(PASS_MAX_DAYS|PASS_MIN_DAYS|PASS_WARN_AGE)' /etc/login.defs 2>/dev/null | awk '{print $1 "=" $2}'
+  register: login_defs_values
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Read sysctl hardening settings
+  shell: |
+    sysctl net.ipv4.conf.all.accept_source_route net.ipv4.conf.default.accept_source_route net.ipv4.conf.all.accept_redirects net.ipv4.conf.default.accept_redirects 2>/dev/null || true
+  register: sysctl_settings
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Build compliance findings
+  set_fact:
+    compliance_findings: >-
+      {{
+        []
+        + (["CIS 5.2.8: SSH PermitRootLogin should be 'no'"] if (sshd_effective.stdout is search('permitrootlogin yes')) else [])
+        + (["CIS 5.2.9: SSH PasswordAuthentication should be 'no'"] if (sshd_effective.stdout is search('passwordauthentication yes')) else [])
+        + (["CIS 5.2.10: SSH PermitEmptyPasswords should be 'no'"] if (sshd_effective.stdout is search('permitemptypasswords yes')) else [])
+      }}
+
+- name: Set compliance content fact
+  set_fact:
+    compliance_cis_content: |
+      === SSH Effective Config ===
+      {{ sshd_effective.stdout | default('No data') }}
+
+      === Password Policy (login.defs) ===
+      {{ login_defs_values.stdout | default('No data') }}
+
+      === Sysctl Hardening ===
+      {{ sysctl_settings.stdout | default('No data') }}
+
+      === Compliance Findings ===
+      {% if compliance_findings | length > 0 %}
+      {{ compliance_findings | join('\n') }}
+      {% else %}
+      No compliance findings detected.
+      {% endif %}
+
+- name: Save compliance data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/compliance_cis.txt"
+    content: "{{ compliance_cis_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

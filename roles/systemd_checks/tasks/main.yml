@@ -10,7 +10,6 @@
 
     - name: Generate systemd checks content
       delegate_to: localhost
-      run_once: true
       shell: |
         cat << 'EOF'
         {% for item in service_status.results %}
@@ -26,10 +25,11 @@
     - name: Set systemd checks content fact
       set_fact:
         systemd_checks_content: "{{ systemd_checks_content_raw.stdout }}"
+        systemd_inactive_services: "{{ service_status.results | selectattr('stdout', 'ne', 'active') | map(attribute='item') | list }}"
+        systemd_warnings: "{{ ([ 'Inactive services: ' ~ (systemd_inactive_services | join(', ')) ] if (systemd_inactive_services | length > 0) else []) }}"
 
     - name: Save service statuses
       delegate_to: localhost
-      run_once: true
       copy:
         dest: "{{ output_dir }}/systemd_checks.txt"
         content: "{{ systemd_checks_content }}"

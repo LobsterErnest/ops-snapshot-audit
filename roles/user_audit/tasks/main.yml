@@ -1,0 +1,54 @@
+---
+- name: List local users (uid >= 1000)
+  shell: |
+    awk -F: '$3>=1000 && $1!="nobody" {print $1 ":" $3 ":" $7}' /etc/passwd
+  register: user_list
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: List system users (uid < 1000)
+  shell: |
+    awk -F: '$3<1000 {print $1 ":" $3 ":" $7}' /etc/passwd
+  register: system_user_list
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: List groups
+  shell: getent group 2>/dev/null | head -n {{ (profile.user_audit | default({})).group_limit | default(200) }}
+  register: group_list
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Recent logins (last)
+  shell: last -n {{ (profile.user_audit | default({})).last_logins | default(50) }} 2>/dev/null || true
+  register: last_logins
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Set user audit content fact
+  set_fact:
+    user_audit_content: |
+      === Local Users (uid >= 1000) ===
+      {{ user_list.stdout | default('No data') }}
+
+      === System Users (uid < 1000) ===
+      {{ system_user_list.stdout | default('No data') }}
+
+      === Groups (sample) ===
+      {{ group_list.stdout | default('No data') }}
+
+      === Recent Logins ===
+      {{ last_logins.stdout | default('No data') }}
+
+- name: Save user audit data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/user_audit.txt"
+    content: "{{ user_audit_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

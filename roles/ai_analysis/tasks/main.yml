@@ -1,7 +1,6 @@
 ---
 - name: Collect data from other roles for AI analysis
   delegate_to: localhost
-  run_once: true
   vars:
     combined_data: |
       === Linux Base ===
@@ -9,6 +8,24 @@
 
       === Systemd Checks ===
       {{ systemd_checks_content | default('No data') }}
+
+      === Security Baseline ===
+      {{ security_baseline_content | default('No data') }}
+
+      === User Audit ===
+      {{ user_audit_content | default('No data') }}
+
+      === Auth Audit ===
+      {{ auth_audit_content | default('No data') }}
+
+      === Network Audit ===
+      {{ network_audit_content | default('No data') }}
+
+      === Time Sync ===
+      {{ time_sync_content | default('No data') }}
+
+      === Compliance (CIS) ===
+      {{ compliance_cis_content | default('No data') }}
 
       === NGINX Check ===
       {{ nginx_content | default('No data') }}
@@ -23,27 +40,23 @@
 
 - name: Set default AI provider
   delegate_to: localhost
-  run_once: true
   set_fact:
     ai_provider: "{{ ai_provider | default('openai') }}"
 
 - name: Check OpenAI API key is provided
   delegate_to: localhost
-  run_once: true
   fail:
     msg: "OpenAI API key not provided. Set 'openai_api_key' variable to enable AI analysis."
   when: ai_provider == 'openai' and (openai_api_key is not defined or openai_api_key == '')
 
 - name: Check Gemini API key is provided
   delegate_to: localhost
-  run_once: true
   fail:
     msg: "Gemini API key not provided. Set 'gemini_api_key' variable to enable AI analysis."
   when: ai_provider == 'google' and (gemini_api_key is not defined or gemini_api_key == '')
 
 - name: Call OpenAI API for SRE analysis
   delegate_to: localhost
-  run_once: true
   uri:
     url: "https://api.openai.com/v1/chat/completions"
     method: POST
@@ -67,7 +80,6 @@
 
 - name: Call Google Gemini API for SRE analysis
   delegate_to: localhost
-  run_once: true
   uri:
     url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={{ gemini_api_key }}"
     method: POST
@@ -85,28 +97,24 @@
 
 - name: Extract AI analysis from OpenAI response
   delegate_to: localhost
-  run_once: true
   set_fact:
     ai_analysis_content: "{{ ai_response.json.choices[0].message.content }}"
   when: ai_provider == 'openai' and ai_response.json is defined and ai_response.json.choices[0].message.content is defined
 
 - name: Extract AI analysis from Gemini response
   delegate_to: localhost
-  run_once: true
   set_fact:
     ai_analysis_content: "{{ ai_response.json.candidates[0].content.parts[0].text }}"
   when: ai_provider == 'google' and ai_response.json is defined and ai_response.json.candidates[0].content.parts[0].text is defined
 
 - name: Set default AI analysis content on failure
   delegate_to: localhost
-  run_once: true
   set_fact:
     ai_analysis_content: "AI analysis could not be performed. Error: {{ ai_response.msg | default('Unknown error') }}"
   when: (ai_provider == 'openai' and (ai_response.json is not defined or ai_response.json.choices[0].message.content is not defined)) or (ai_provider == 'google' and (ai_response.json is not defined or ai_response.json.candidates[0].content.parts[0].text is not defined))
 
 - name: Save AI analysis to file
   delegate_to: localhost
-  run_once: true
   copy:
     dest: "{{ output_dir }}/ai_analysis.txt"
     content: "{{ ai_analysis_content }}"

@@ -1,10 +1,15 @@
 ---
 - name: Gather collected data for reporting
   delegate_to: localhost
-  run_once: true
   vars:
     linux_base_file: "{{ output_dir }}/linux_base.txt"
     systemd_checks_file: "{{ output_dir }}/systemd_checks.txt"
+    security_baseline_file: "{{ output_dir }}/security_baseline.txt"
+    user_audit_file: "{{ output_dir }}/user_audit.txt"
+    auth_audit_file: "{{ output_dir }}/auth_audit.txt"
+    network_audit_file: "{{ output_dir }}/network_audit.txt"
+    time_sync_file: "{{ output_dir }}/time_sync.txt"
+    compliance_cis_file: "{{ output_dir }}/compliance_cis.txt"
     nginx_file: "{{ output_dir }}/nginx.txt"
     logs_collect_file: "{{ output_dir }}/logs_collect.txt"
     updates_readonly_file: "{{ output_dir }}/updates_readonly.txt"
@@ -12,6 +17,12 @@
     file_names:
       - "{{ linux_base_file }}"
       - "{{ systemd_checks_file }}"
+      - "{{ security_baseline_file }}"
+      - "{{ user_audit_file }}"
+      - "{{ auth_audit_file }}"
+      - "{{ network_audit_file }}"
+      - "{{ time_sync_file }}"
+      - "{{ compliance_cis_file }}"
       - "{{ nginx_file }}"
       - "{{ logs_collect_file }}"
       - "{{ updates_readonly_file }}"
@@ -19,6 +30,12 @@
     content_vars:
       - "{{ linux_base_content | default('') }}"
       - "{{ systemd_checks_content | default('') }}"
+      - "{{ security_baseline_content | default('') }}"
+      - "{{ user_audit_content | default('') }}"
+      - "{{ auth_audit_content | default('') }}"
+      - "{{ network_audit_content | default('') }}"
+      - "{{ time_sync_content | default('') }}"
+      - "{{ compliance_cis_content | default('') }}"
       - "{{ nginx_content | default('') }}"
       - "{{ logs_collect_content | default('') }}"
       - "{{ updates_readonly_content | default('') }}"
@@ -31,7 +48,12 @@
     - name: Add items to file contents list
       set_fact:
         file_contents_results: "{{ file_contents_results + [{'item': file_names[item | int], 'found': (content_vars[item | int] | length > 0), 'content': (content_vars[item | int] | b64encode)}] }}"
-      loop: "{{ range(0, 6) | list }}"
+      loop: "{{ range(0, file_names | length) | list }}"
+
+    - name: Build aggregated findings and score
+      set_fact:
+        audit_findings: "{{ (linux_base_warnings | default([])) + (systemd_warnings | default([])) + (security_findings | default([])) + (compliance_findings | default([])) }}"
+        audit_score: "{{ [0, 100 - ((linux_base_warnings | default([]) | length + systemd_warnings | default([]) | length + security_findings | default([]) | length + compliance_findings | default([]) | length) * 10)] | max }}"
 
     - name: Generate summary report
       template:
@@ -40,3 +62,28 @@
         mode: '0644'
       vars:
         files: "{{ file_contents_results }}"
+        findings: "{{ audit_findings }}"
+        score: "{{ audit_score }}"
+
+    - name: Generate JSON report
+      template:
+        src: summary.json.j2
+        dest: "{{ output_dir }}/summary-{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}.json"
+        mode: '0644'
+      vars:
+        files: "{{ file_contents_results }}"
+        findings: "{{ audit_findings }}"
+        score: "{{ audit_score }}"
+
+    - name: Generate Prometheus metrics
+      template:
+        src: metrics.prom.j2
+        dest: "{{ output_dir }}/metrics.prom"
+        mode: '0644'
+      vars:
+        score: "{{ audit_score }}"
+        disk_usage_max_pct: "{{ linux_base_metrics.disk_usage_max_pct | default(0) }}"
+        mem_usage_pct: "{{ linux_base_metrics.mem_usage_pct | default(0) }}"
+        load_avg_1m: "{{ linux_base_metrics.load_avg_1m | default(0) }}"
+        inactive_services: "{{ systemd_inactive_services | default([]) }}"
+        findings_count: "{{ audit_findings | length }}"

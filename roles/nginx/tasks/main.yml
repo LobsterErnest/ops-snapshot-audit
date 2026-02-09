@@ -35,7 +35,6 @@
 
 - name: Generate nginx content
   delegate_to: localhost
-  run_once: true
   shell: |
     cat << 'EOF'
     NGINX Installed: {{ nginx_installed.rc == 0 }}
@@ -60,7 +59,6 @@
 
 - name: Save nginx info
   delegate_to: localhost
-  run_once: true
   copy:
     dest: "{{ output_dir }}/nginx.txt"
     content: "{{ nginx_content }}"

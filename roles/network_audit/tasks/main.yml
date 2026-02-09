@@ -1,0 +1,82 @@
+---
+- name: Get IP addresses
+  shell: ip -brief addr 2>/dev/null || ifconfig -a 2>/dev/null || true
+  register: ip_addr
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Get routing table
+  shell: ip route 2>/dev/null || route -n 2>/dev/null || true
+  register: routes
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Get DNS configuration
+  shell: cat /etc/resolv.conf 2>/dev/null || true
+  register: resolv_conf
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check firewall status (ufw)
+  shell: ufw status 2>/dev/null || true
+  register: ufw_status
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check firewall status (firewalld)
+  shell: firewall-cmd --state 2>/dev/null || true
+  register: firewalld_state
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check firewall rules (iptables)
+  shell: iptables -S 2>/dev/null | head -n {{ (profile.network_audit | default({})).rules_limit | default(200) }} || true
+  register: iptables_rules
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check firewall rules (nft)
+  shell: nft list ruleset 2>/dev/null | head -n {{ (profile.network_audit | default({})).rules_limit | default(200) }} || true
+  register: nft_rules
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Set network audit content fact
+  set_fact:
+    network_audit_content: |
+      === IP Addresses ===
+      {{ ip_addr.stdout | default('No data') }}
+
+      === Routes ===
+      {{ routes.stdout | default('No data') }}
+
+      === DNS ===
+      {{ resolv_conf.stdout | default('No data') }}
+
+      === Firewall (UFW) ===
+      {{ ufw_status.stdout | default('No data') }}
+
+      === Firewall (firewalld) ===
+      {{ firewalld_state.stdout | default('No data') }}
+
+      === Firewall Rules (iptables sample) ===
+      {{ iptables_rules.stdout | default('No data') }}
+
+      === Firewall Rules (nft sample) ===
+      {{ nft_rules.stdout | default('No data') }}
+
+- name: Save network audit data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/network_audit.txt"
+    content: "{{ network_audit_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

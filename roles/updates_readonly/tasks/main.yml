@@ -15,7 +15,6 @@
 
 - name: Generate updates readonly content
   delegate_to: localhost
-  run_once: true
   shell: |
     cat << 'EOF'
     Package Manager: {{ ansible_pkg_mgr | default('Unknown') }}
@@ -38,7 +37,6 @@
 
 - name: Save updates info
   delegate_to: localhost
-  run_once: true
   copy:
     dest: "{{ output_dir }}/updates_readonly.txt"
     content: "{{ updates_readonly_content }}"

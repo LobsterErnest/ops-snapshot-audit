@@ -1,0 +1,42 @@
+---
+- name: Check time synchronization status
+  shell: timedatectl status 2>/dev/null || true
+  register: timedate_status
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check chrony status
+  shell: chronyc tracking 2>/dev/null || true
+  register: chrony_status
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check NTP status
+  shell: ntpq -p 2>/dev/null || true
+  register: ntp_status
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Set time sync content fact
+  set_fact:
+    time_sync_content: |
+      === Timedatectl ===
+      {{ timedate_status.stdout | default('No data') }}
+
+      === Chrony ===
+      {{ chrony_status.stdout | default('No data') }}
+
+      === NTP ===
+      {{ ntp_status.stdout | default('No data') }}
+
+- name: Save time sync data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/time_sync.txt"
+    content: "{{ time_sync_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

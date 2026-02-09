@@ -1,0 +1,24 @@
+{
+  "host": "{{ inventory_hostname }}",
+  "timestamp": "{{ ansible_date_time.date }}T{{ ansible_date_time.time }}",
+  "profile": {{ profile | default({}) | to_json }},
+  "score": {{ score | default(0) }},
+  "metrics": {
+    "disk_usage_max_pct": {{ linux_base_metrics.disk_usage_max_pct | default(0) }},
+    "mem_usage_pct": {{ linux_base_metrics.mem_usage_pct | default(0) }},
+    "load_avg_1m": {{ linux_base_metrics.load_avg_1m | default(0) }},
+    "inactive_services": {{ systemd_inactive_services | default([]) | to_json }},
+    "findings_count": {{ findings | default([]) | length }}
+  },
+  "findings": {{ findings | default([]) | to_json }},
+  "modules": [
+    {% for file in files | default([]) %}
+    {
+      "path": "{{ file['item'] | default('') }}",
+      "name": "{{ file['item'] | default('') | basename }}",
+      "found": {{ 'true' if file['found'] | default(false) else 'false' }},
+      "content_b64": "{{ file['content'] | default('') }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}

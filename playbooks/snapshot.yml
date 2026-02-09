@@ -7,11 +7,11 @@
     output_dir: "output/{{ inventory_hostname }}/{{ timestamp }}"
     profile_file: "{{ playbook_dir }}/../profiles/mipro-linux.yml"
     profile: "{{ lookup('file', profile_file) | from_yaml }}"
+    profile_modules: "{{ profile.modules | default([]) }}"
   
   pre_tasks:
     - name: Ensure output directory exists
       delegate_to: localhost
-      run_once: true
       shell: mkdir -p "{{ output_dir }}" && chmod 0755 "{{ output_dir }}"
       changed_when: false
       ignore_errors: true
@@ -19,18 +19,34 @@
 
   roles:
     - role: linux_base
+      when: profile_modules | length == 0 or 'linux_base' in profile_modules
     - role: systemd_checks
+      when: profile_modules | length == 0 or 'systemd_checks' in profile_modules
+    - role: security_baseline
+      when: profile_modules | length == 0 or 'security_baseline' in profile_modules
+    - role: user_audit
+      when: profile_modules | length == 0 or 'user_audit' in profile_modules
+    - role: auth_audit
+      when: profile_modules | length == 0 or 'auth_audit' in profile_modules
+    - role: network_audit
+      when: profile_modules | length == 0 or 'network_audit' in profile_modules
+    - role: time_sync
+      when: profile_modules | length == 0 or 'time_sync' in profile_modules
+    - role: compliance_cis
+      when: profile_modules | length == 0 or 'compliance_cis' in profile_modules
     - role: nginx
-      when: "'nginx' in profile.services"
+      when: (profile_modules | length == 0 or 'nginx' in profile_modules) and ('nginx' in (profile.services | default([])))
     - role: logs_collect
+      when: profile_modules | length == 0 or 'logs_collect' in profile_modules
     - role: updates_readonly
+      when: profile_modules | length == 0 or 'updates_readonly' in profile_modules
     - role: ai_analysis
-      when: (openai_api_key is defined and openai_api_key != '') or (gemini_api_key is defined and gemini_api_key != '')
+      when: (profile_modules | length == 0 or 'ai_analysis' in profile_modules) and ((openai_api_key is defined and openai_api_key != '') or (gemini_api_key is defined and gemini_api_key != ''))
     - role: reporting
+      when: profile_modules | length == 0 or 'reporting' in profile_modules
 
   post_tasks:
     - name: Display summary location
       delegate_to: localhost
-      run_once: true
       debug:
-        msg: "Snapshot report saved to {{ output_dir }}/summary.md"
+        msg: "Snapshot reports saved under {{ output_dir }} (summary-*.md, summary-*.json, metrics.prom)"

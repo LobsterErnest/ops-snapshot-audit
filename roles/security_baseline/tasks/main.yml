@@ -1,0 +1,122 @@
+---
+- name: Check SSH configuration (sshd -T)
+  shell: sshd -T 2>/dev/null | grep -E '^(permitrootlogin|passwordauthentication|pubkeyauthentication|permitemptypasswords)'
+  register: sshd_t
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check SSH configuration (sshd_config fallback)
+  shell: |
+    grep -E '^(PermitRootLogin|PasswordAuthentication|PubkeyAuthentication|PermitEmptyPasswords)' /etc/ssh/sshd_config 2>/dev/null || true
+  register: sshd_config
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check critical file permissions
+  shell: |
+    stat -c '%a %n' /etc/passwd /etc/group /etc/shadow 2>/dev/null || true
+  register: critical_perms
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Check password policy defaults
+  shell: |
+    grep -E '^(PASS_MAX_DAYS|PASS_MIN_DAYS|PASS_WARN_AGE)' /etc/login.defs 2>/dev/null || true
+  register: login_defs
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Count SUID/SGID binaries
+  shell: |
+    find / -xdev -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | wc -l
+  register: suid_count
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+  when: ((profile.security | default({})).scan_suid | default(true))
+
+- name: Sample SUID/SGID binaries
+  shell: |
+    find / -xdev -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null | head -n {{ (profile.security | default({})).list_limit | default(50) }}
+  register: suid_list
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+  when: ((profile.security | default({})).scan_suid | default(true))
+
+- name: Count world-writable directories
+  shell: |
+    find / -xdev -type d -perm -0002 2>/dev/null | wc -l
+  register: world_writable_count
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+  when: ((profile.security | default({})).scan_world_writable | default(true))
+
+- name: Sample world-writable directories
+  shell: |
+    find / -xdev -type d -perm -0002 2>/dev/null | head -n {{ (profile.security | default({})).list_limit | default(50) }}
+  register: world_writable_list
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+  when: ((profile.security | default({})).scan_world_writable | default(true))
+
+- name: Build security findings
+  set_fact:
+    security_findings: >-
+      {{
+        []
+        + (["SSH PermitRootLogin is enabled"] if (sshd_t.stdout is search('permitrootlogin yes') or sshd_config.stdout is search('PermitRootLogin\s+yes')) else [])
+        + (["SSH PasswordAuthentication is enabled"] if (sshd_t.stdout is search('passwordauthentication yes') or sshd_config.stdout is search('PasswordAuthentication\s+yes')) else [])
+        + (["SSH PermitEmptyPasswords is enabled"] if (sshd_t.stdout is search('permitemptypasswords yes') or sshd_config.stdout is search('PermitEmptyPasswords\s+yes')) else [])
+        + (["SUID/SGID binaries exceed threshold: " ~ (suid_count.stdout | default('0') | trim)] if (suid_count is defined and (suid_count.stdout | default('0') | int) >= ((profile.security | default({})).suid_warn_threshold | default(200))) else [])
+        + (["World-writable directories exceed threshold: " ~ (world_writable_count.stdout | default('0') | trim)] if (world_writable_count is defined and (world_writable_count.stdout | default('0') | int) >= ((profile.security | default({})).world_writable_warn_threshold | default(200))) else [])
+      }}
+
+- name: Set security baseline content fact
+  set_fact:
+    security_baseline_content: |
+      === SSHD Effective Config ===
+      {{ sshd_t.stdout | default('No data') }}
+
+      === SSHD Config File ===
+      {{ sshd_config.stdout | default('No data') }}
+
+      === Critical File Permissions ===
+      {{ critical_perms.stdout | default('No data') }}
+
+      === Password Policy ===
+      {{ login_defs.stdout | default('No data') }}
+
+      === SUID/SGID Count ===
+      {{ suid_count.stdout | default('N/A') }}
+
+      === SUID/SGID Sample ===
+      {{ suid_list.stdout | default('N/A') }}
+
+      === World-Writable Count ===
+      {{ world_writable_count.stdout | default('N/A') }}
+
+      === World-Writable Sample ===
+      {{ world_writable_list.stdout | default('N/A') }}
+
+      === Security Findings ===
+      {% if security_findings | length > 0 %}
+      {{ security_findings | join('\n') }}
+      {% else %}
+      No security findings detected.
+      {% endif %}
+
+- name: Save security baseline data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/security_baseline.txt"
+    content: "{{ security_baseline_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

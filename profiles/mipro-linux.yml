@@ -2,6 +2,21 @@
 name: mipro-linux
 description: Profile for standard Linux servers with nginx and mysql
 
+modules:
+  - linux_base
+  - systemd_checks
+  - security_baseline
+  - user_audit
+  - auth_audit
+  - network_audit
+  - time_sync
+  - compliance_cis
+  - nginx
+  - logs_collect
+  - updates_readonly
+  - ai_analysis
+  - reporting
+
 services:
   - sshd
   - cron
@@ -14,3 +29,20 @@ thresholds:
   disk_usage_warn: 80
   memory_usage_warn: 90
   load_average_warn: 2.0
+
+security:
+  scan_suid: true
+  scan_world_writable: true
+  list_limit: 50
+  suid_warn_threshold: 200
+  world_writable_warn_threshold: 200
+
+user_audit:
+  last_logins: 50
+  group_limit: 200
+
+auth_audit:
+  lines: 100
+
+network_audit:
+  rules_limit: 200

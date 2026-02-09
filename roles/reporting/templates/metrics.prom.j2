@@ -1,0 +1,23 @@
+# HELP opssnap_audit_score Overall audit score (0-100)
+# TYPE opssnap_audit_score gauge
+opssnap_audit_score{host="{{ inventory_hostname }}"} {{ score | default(0) }}
+
+# HELP opssnap_disk_usage_max_pct Maximum disk usage percent across mountpoints
+# TYPE opssnap_disk_usage_max_pct gauge
+opssnap_disk_usage_max_pct{host="{{ inventory_hostname }}"} {{ disk_usage_max_pct | default(0) }}
+
+# HELP opssnap_mem_usage_pct Memory usage percent
+# TYPE opssnap_mem_usage_pct gauge
+opssnap_mem_usage_pct{host="{{ inventory_hostname }}"} {{ mem_usage_pct | default(0) }}
+
+# HELP opssnap_load_avg_1m 1-minute load average
+# TYPE opssnap_load_avg_1m gauge
+opssnap_load_avg_1m{host="{{ inventory_hostname }}"} {{ load_avg_1m | default(0) }}
+
+# HELP opssnap_inactive_services_count Count of inactive services in profile
+# TYPE opssnap_inactive_services_count gauge
+opssnap_inactive_services_count{host="{{ inventory_hostname }}"} {{ inactive_services | default([]) | length }}
+
+# HELP opssnap_findings_count Total findings count
+# TYPE opssnap_findings_count gauge
+opssnap_findings_count{host="{{ inventory_hostname }}"} {{ findings_count | default(0) }}

@@ -30,9 +30,27 @@
   changed_when: false
   ignore_errors: true
 
+- name: Get memory usage percent
+  shell: free | awk '/Mem:/ {printf \"%d\", ($3/$2)*100}'
+  register: mem_usage_pct
+  changed_when: false
+  ignore_errors: true
+
 - name: Get disk usage
   shell: df -h
   register: disk_info
+  changed_when: false
+  ignore_errors: true
+
+- name: Get max disk usage percent
+  shell: df -P | awk 'NR>1 {gsub(/%/,\"\",$5); if ($5>max) max=$5} END {print max+0}'
+  register: disk_usage_max_pct
+  changed_when: false
+  ignore_errors: true
+
+- name: Get load average (1m)
+  shell: awk '{print $1}' /proc/loadavg
+  register: load_avg_1m
   changed_when: false
   ignore_errors: true
 
@@ -68,13 +86,21 @@
 
 - name: Set linux_base content fact
   set_fact:
-    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\n'), '', 'Memory:', memory_info.stdout_lines | join('\n'), '', 'Disk:', disk_info.stdout_lines | join('\n'), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\n'), '', 'Listening Ports:', listening_ports.stdout_lines | default([]) | join('\n'), '', 'ESET Status:', eset_status.stdout_lines | default([]) | join('\n'), '', 'All Services:', all_services.stdout_lines | default([]) | join('\n')] | join('\n') }}"
-  delegate_to: localhost
-  run_once: true
+    linux_base_metrics:
+      disk_usage_max_pct: "{{ disk_usage_max_pct.stdout | default('0') | int }}"
+      mem_usage_pct: "{{ mem_usage_pct.stdout | default('0') | int }}"
+      load_avg_1m: "{{ load_avg_1m.stdout | default('0') | float }}"
+    linux_base_warnings: >-
+      {{
+        []
+        + ([\"Disk usage high: \" ~ (disk_usage_max_pct.stdout | default('0') | int) ~ \"%\"] if (disk_usage_max_pct.stdout | default('0') | int) >= (profile.thresholds.disk_usage_warn | default(80)) else [])
+        + ([\"Memory usage high: \" ~ (mem_usage_pct.stdout | default('0') | int) ~ \"%\"] if (mem_usage_pct.stdout | default('0') | int) >= (profile.thresholds.memory_usage_warn | default(90)) else [])
+        + ([\"Load average high: \" ~ (load_avg_1m.stdout | default('0') | float)] if (load_avg_1m.stdout | default('0') | float) >= (profile.thresholds.load_average_warn | default(2.0)) else [])
+      }}
+    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\\n'), '', 'Memory:', memory_info.stdout_lines | join('\\n'), '', 'Disk:', disk_info.stdout_lines | join('\\n'), '', 'Load Avg 1m: ' ~ (load_avg_1m.stdout | default('0')), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\\n'), '', 'Listening Ports:', listening_ports.stdout_lines | default([]) | join('\\n'), '', 'ESET Status:', eset_status.stdout_lines | default([]) | join('\\n'), '', 'All Services:', all_services.stdout_lines | default([]) | join('\\n')] | join('\\n') }}"
 
 - name: Save collected data to file
   delegate_to: localhost
-  run_once: true
   copy:
     dest: "{{ output_dir }}/linux_base.txt"
     content: "{{ linux_base_content }}"

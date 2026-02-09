@@ -1,0 +1,34 @@
+---
+- name: Identify authentication log file
+  shell: |
+    if [ -f /var/log/auth.log ]; then echo /var/log/auth.log; elif [ -f /var/log/secure ]; then echo /var/log/secure; else echo NONE; fi
+  register: auth_log_path
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Tail authentication log
+  shell: |
+    if [ "{{ auth_log_path.stdout | trim }}" = "NONE" ]; then echo "Auth log not found"; else tail -n {{ (profile.auth_audit | default({})).lines | default(100) }} "{{ auth_log_path.stdout | trim }}"; fi
+  register: auth_log_tail
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+
+- name: Set auth audit content fact
+  set_fact:
+    auth_audit_content: |
+      === Auth Log Path ===
+      {{ auth_log_path.stdout | default('NONE') }}
+
+      === Auth Log Tail ===
+      {{ auth_log_tail.stdout | default('No data') }}
+
+- name: Save auth audit data
+  delegate_to: localhost
+  copy:
+    dest: "{{ output_dir }}/auth_audit.txt"
+    content: "{{ auth_audit_content }}"
+    mode: '0644'
+  ignore_errors: true
+  failed_when: false

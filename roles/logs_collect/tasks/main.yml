@@ -10,7 +10,6 @@
 
     - name: Generate logs collect content
       delegate_to: localhost
-      run_once: true
       shell: |
         cat << 'EOF'
         {% for result in log_contents.results %}
@@ -34,7 +33,6 @@
 
     - name: Save log contents
       delegate_to: localhost
-      run_once: true
       copy:
         dest: "{{ output_dir }}/logs_collect.txt"
         content: "{{ logs_collect_content }}"
