@@ -1,0 +1,70 @@
+=== SSHD Effective Config ===
+
+
+=== SSHD Config File ===
+PermitRootLogin yes
+
+=== Critical File Permissions ===
+644 /etc/passwd
+644 /etc/group
+640 /etc/shadow
+
+=== Password Policy ===
+PASS_MAX_DAYS	99999
+PASS_MIN_DAYS	0
+PASS_WARN_AGE	7
+
+=== SUID/SGID Count ===
+20
+
+=== SUID/SGID Sample ===
+/usr/bin/newgrp
+/usr/bin/crontab
+/usr/bin/chsh
+/usr/bin/gpasswd
+/usr/bin/sudo
+/usr/bin/ssh-agent
+/usr/bin/passwd
+/usr/bin/su
+/usr/bin/chage
+/usr/bin/expiry
+/usr/bin/fusermount3
+/usr/bin/umount
+/usr/bin/mount
+/usr/bin/chfn
+/usr/sbin/pam_extrausers_chkpwd
+/usr/sbin/unix_chkpwd
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/lib/openssh/ssh-keysign
+/usr/lib/x86_64-linux-gnu/utempter/utempter
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+
+=== World-Writable Count ===
+22
+
+=== World-Writable Sample ===
+/tmp
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-fwupd.service-Tjct6j/tmp
+/tmp/snap-private-tmp/snap.cups/tmp
+/tmp/.XIM-unix
+/tmp/.ICE-unix
+/tmp/.font-unix
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-resolved.service-1W8VSA/tmp
+/tmp/.X11-unix
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-logind.service-SVMTOS/tmp
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-polkit.service-qKyv1c/tmp
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-timesyncd.service-aF17qo/tmp
+/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-ModemManager.service-YLkpJH/tmp
+/var/snap/cups/1142/tmp
+/var/tmp
+/var/tmp/cloud-init
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-resolved.service-f36ktl/tmp
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-logind.service-hpNPmV/tmp
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-polkit.service-xwrM7C/tmp
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-systemd-timesyncd.service-Otj7dz/tmp
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-fwupd.service-jJj5vT/tmp
+/var/tmp/systemd-private-467ed8573aec4173a6cdb822dcbf8b32-ModemManager.service-3zpRcN/tmp
+/var/crash
+
+=== Security Findings ===
+SSH PermitRootLogin is enabled

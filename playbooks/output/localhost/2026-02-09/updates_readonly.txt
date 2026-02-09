@@ -1,0 +1,3 @@
+Package Manager: apt
+Updates:
+base-files/noble-updates 13ubuntu10.4 amd64 [upgradable from: 13ubuntu10.3]\ninitramfs-tools-bin/noble-updates 0.142ubuntu25.8 amd64 [upgradable from: 0.142ubuntu25.5]\ninitramfs-tools-core/noble-updates 0.142ubuntu25.8 all [upgradable from: 0.142ubuntu25.5]\ninitramfs-tools/noble-updates 0.142ubuntu25.8 all [upgradable from: 0.142ubuntu25.5]\nmotd-news-config/noble-updates 13ubuntu10.4 all [upgradable from: 13ubuntu10.3]

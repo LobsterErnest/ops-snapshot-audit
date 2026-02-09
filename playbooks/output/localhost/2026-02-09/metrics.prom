@@ -1,0 +1,23 @@
+# HELP opssnap_audit_score Overall audit score (0-100)
+# TYPE opssnap_audit_score gauge
+opssnap_audit_score{host="localhost"} 80
+
+# HELP opssnap_disk_usage_max_pct Maximum disk usage percent across mountpoints
+# TYPE opssnap_disk_usage_max_pct gauge
+opssnap_disk_usage_max_pct{host="localhost"} {'changed': False, 'stdout': '6', 'stderr': '', 'rc': 0, 'cmd': 'df -P | awk \'NR>1 {gsub(/%/,"",$5); if ($5>max) max=$5} END {print max+0}\'', 'start': '2026-02-09 17:46:15.610148', 'end': '2026-02-09 17:46:15.621656', 'delta': '0:00:00.011508', 'msg': '', 'stdout_lines': ['6'], 'stderr_lines': [], 'failed': False}
+
+# HELP opssnap_mem_usage_pct Memory usage percent
+# TYPE opssnap_mem_usage_pct gauge
+opssnap_mem_usage_pct{host="localhost"} {'changed': False, 'stdout': '15', 'stderr': '', 'rc': 0, 'cmd': 'free | awk \'/Mem:/ {printf "%d", ($3/$2)*100}\'', 'start': '2026-02-09 17:46:14.669751', 'end': '2026-02-09 17:46:14.693745', 'delta': '0:00:00.023994', 'msg': '', 'stdout_lines': ['15'], 'stderr_lines': [], 'failed': False}
+
+# HELP opssnap_load_avg_1m 1-minute load average
+# TYPE opssnap_load_avg_1m gauge
+opssnap_load_avg_1m{host="localhost"} {'changed': False, 'stdout': '1.19', 'stderr': '', 'rc': 0, 'cmd': "awk '{print $1}' /proc/loadavg", 'start': '2026-02-09 17:46:16.189801', 'end': '2026-02-09 17:46:16.209271', 'delta': '0:00:00.019470', 'msg': '', 'stdout_lines': ['1.19'], 'stderr_lines': [], 'failed': False}
+
+# HELP opssnap_inactive_services_count Count of inactive services in profile
+# TYPE opssnap_inactive_services_count gauge
+opssnap_inactive_services_count{host="localhost"} 1
+
+# HELP opssnap_findings_count Total findings count
+# TYPE opssnap_findings_count gauge
+opssnap_findings_count{host="localhost"} 2

@@ -31,7 +31,7 @@
   ignore_errors: true
 
 - name: Get memory usage percent
-  shell: free | awk '/Mem:/ {printf \"%d\", ($3/$2)*100}'
+  shell: free | awk '/Mem:/ {printf "%d", ($3/$2)*100}'
   register: mem_usage_pct
   changed_when: false
   ignore_errors: true
@@ -43,7 +43,7 @@
   ignore_errors: true
 
 - name: Get max disk usage percent
-  shell: df -P | awk 'NR>1 {gsub(/%/,\"\",$5); if ($5>max) max=$5} END {print max+0}'
+  shell: df -P | awk 'NR>1 {gsub(/%/,"",$5); if ($5>max) max=$5} END {print max+0}'
   register: disk_usage_max_pct
   changed_when: false
   ignore_errors: true
@@ -93,11 +93,43 @@
     linux_base_warnings: >-
       {{
         []
-        + ([\"Disk usage high: \" ~ (disk_usage_max_pct.stdout | default('0') | int) ~ \"%\"] if (disk_usage_max_pct.stdout | default('0') | int) >= (profile.thresholds.disk_usage_warn | default(80)) else [])
-        + ([\"Memory usage high: \" ~ (mem_usage_pct.stdout | default('0') | int) ~ \"%\"] if (mem_usage_pct.stdout | default('0') | int) >= (profile.thresholds.memory_usage_warn | default(90)) else [])
-        + ([\"Load average high: \" ~ (load_avg_1m.stdout | default('0') | float)] if (load_avg_1m.stdout | default('0') | float) >= (profile.thresholds.load_average_warn | default(2.0)) else [])
+        + (["Disk usage high: " ~ (disk_usage_max_pct.stdout | default('0') | int) ~ "%"] if (disk_usage_max_pct.stdout | default('0') | int) >= (profile.thresholds.disk_usage_warn | default(80)) else [])
+        + (["Memory usage high: " ~ (mem_usage_pct.stdout | default('0') | int) ~ "%"] if (mem_usage_pct.stdout | default('0') | int) >= (profile.thresholds.memory_usage_warn | default(90)) else [])
+        + (["Load average high: " ~ (load_avg_1m.stdout | default('0') | float)] if (load_avg_1m.stdout | default('0') | float) >= (profile.thresholds.load_average_warn | default(2.0)) else [])
       }}
-    linux_base_content: "{{ ['OS Info:', os_info.stdout_lines | join('\\n'), '', 'Kernel: ' ~ kernel_version.stdout, '', 'Uptime: ' ~ uptime_info.stdout, '', 'CPU Info:', cpu_info.stdout_lines | join('\\n'), '', 'Memory:', memory_info.stdout_lines | join('\\n'), '', 'Disk:', disk_info.stdout_lines | join('\\n'), '', 'Load Avg 1m: ' ~ (load_avg_1m.stdout | default('0')), '', 'Top CPU Processes:', top_cpu.stdout_lines | join('\\n'), '', 'Top Memory Processes:', top_mem.stdout_lines | join('\\n'), '', 'Listening Ports:', listening_ports.stdout_lines | default([]) | join('\\n'), '', 'ESET Status:', eset_status.stdout_lines | default([]) | join('\\n'), '', 'All Services:', all_services.stdout_lines | default([]) | join('\\n')] | join('\\n') }}"
+    linux_base_content: |
+      OS Info:
+      {{ os_info.stdout | default('N/A') }}
+      
+      Kernel: {{ kernel_version.stdout | default('N/A') }}
+      
+      Uptime: {{ uptime_info.stdout | default('N/A') }}
+      
+      CPU Info:
+      {{ cpu_info.stdout | default('N/A') }}
+      
+      Memory:
+      {{ memory_info.stdout | default('N/A') }}
+      
+      Disk:
+      {{ disk_info.stdout | default('N/A') }}
+      
+      Load Avg 1m: {{ load_avg_1m.stdout | default('0') }}
+      
+      Top CPU Processes:
+      {{ top_cpu.stdout | default('N/A') }}
+      
+      Top Memory Processes:
+      {{ top_mem.stdout | default('N/A') }}
+      
+      Listening Ports:
+      {{ listening_ports.stdout | default('N/A') }}
+      
+      ESET Status:
+      {{ eset_status.stdout | default('N/A') }}
+      
+      All Services:
+      {{ all_services.stdout | default('N/A') }}
 
 - name: Save collected data to file
   delegate_to: localhost

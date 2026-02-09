@@ -1,0 +1,13 @@
+=== Timedatectl ===
+               Local time: Mon 2026-02-09 17:47:15 CET
+           Universal time: Mon 2026-02-09 16:47:15 UTC
+                 RTC time: Mon 2026-02-09 16:47:16
+                Time zone: Europe/Berlin (CET, +0100)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+
+=== Chrony ===
+
+
+=== NTP ===

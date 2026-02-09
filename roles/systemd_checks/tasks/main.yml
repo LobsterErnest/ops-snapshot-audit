@@ -26,6 +26,9 @@
       set_fact:
         systemd_checks_content: "{{ systemd_checks_content_raw.stdout }}"
         systemd_inactive_services: "{{ service_status.results | selectattr('stdout', 'ne', 'active') | map(attribute='item') | list }}"
+
+    - name: Set systemd warnings fact
+      set_fact:
         systemd_warnings: "{{ ([ 'Inactive services: ' ~ (systemd_inactive_services | join(', ')) ] if (systemd_inactive_services | length > 0) else []) }}"
 
     - name: Save service statuses

@@ -1,0 +1,104 @@
+=== Auth Log Path ===
+/var/log/auth.log
+
+=== Auth Log Tail ===
+2026-02-09T17:42:13.592329+01:00 vmi2763474 sshd[84846]: Received disconnect from 23.236.169.187 port 39892:11: Bye Bye [preauth]
+2026-02-09T17:42:13.594223+01:00 vmi2763474 sshd[84846]: Disconnected from invalid user shivam 23.236.169.187 port 39892 [preauth]
+2026-02-09T17:42:34.833191+01:00 vmi2763474 sshd[84872]: Invalid user node from 80.94.92.186 port 55572
+2026-02-09T17:42:35.014115+01:00 vmi2763474 sshd[84872]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:42:35.014653+01:00 vmi2763474 sshd[84872]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=80.94.92.186 
+2026-02-09T17:42:36.667565+01:00 vmi2763474 sshd[84872]: Failed password for invalid user node from 80.94.92.186 port 55572 ssh2
+2026-02-09T17:42:54.006688+01:00 vmi2763474 sshd[84898]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=23.236.169.187  user=root
+2026-02-09T17:42:55.797971+01:00 vmi2763474 sshd[84898]: Failed password for root from 23.236.169.187 port 55648 ssh2
+2026-02-09T17:42:56.236444+01:00 vmi2763474 sshd[84898]: Received disconnect from 23.236.169.187 port 55648:11: Bye Bye [preauth]
+2026-02-09T17:42:56.236714+01:00 vmi2763474 sshd[84898]: Disconnected from authenticating user root 23.236.169.187 port 55648 [preauth]
+2026-02-09T17:43:03.018017+01:00 vmi2763474 sshd[84915]: Invalid user test from 103.124.92.110 port 42264
+2026-02-09T17:43:03.025594+01:00 vmi2763474 sshd[84915]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:43:03.025806+01:00 vmi2763474 sshd[84915]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=103.124.92.110 
+2026-02-09T17:43:05.525445+01:00 vmi2763474 sshd[84915]: Failed password for invalid user test from 103.124.92.110 port 42264 ssh2
+2026-02-09T17:43:07.302246+01:00 vmi2763474 sshd[85038]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=101.36.107.233  user=root
+2026-02-09T17:43:07.596073+01:00 vmi2763474 sshd[84915]: Received disconnect from 103.124.92.110 port 42264:11: Bye Bye [preauth]
+2026-02-09T17:43:07.596384+01:00 vmi2763474 sshd[84915]: Disconnected from invalid user test 103.124.92.110 port 42264 [preauth]
+2026-02-09T17:43:09.012686+01:00 vmi2763474 sshd[85038]: Failed password for root from 101.36.107.233 port 22216 ssh2
+2026-02-09T17:43:09.578646+01:00 vmi2763474 sshd[85038]: Received disconnect from 101.36.107.233 port 22216:11: Bye Bye [preauth]
+2026-02-09T17:43:09.578868+01:00 vmi2763474 sshd[85038]: Disconnected from authenticating user root 101.36.107.233 port 22216 [preauth]
+2026-02-09T17:43:25.292692+01:00 vmi2763474 sshd[85608]: Invalid user auser from 14.103.112.56 port 50830
+2026-02-09T17:43:25.307497+01:00 vmi2763474 sshd[85608]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:43:25.308012+01:00 vmi2763474 sshd[85608]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=14.103.112.56 
+2026-02-09T17:43:27.162078+01:00 vmi2763474 sshd[85608]: Failed password for invalid user auser from 14.103.112.56 port 50830 ssh2
+2026-02-09T17:43:27.565417+01:00 vmi2763474 sshd[85608]: Received disconnect from 14.103.112.56 port 50830:11: Bye Bye [preauth]
+2026-02-09T17:43:27.565662+01:00 vmi2763474 sshd[85608]: Disconnected from invalid user auser 14.103.112.56 port 50830 [preauth]
+2026-02-09T17:43:42.791475+01:00 vmi2763474 sshd[85836]: Invalid user jtribino from 23.236.169.187 port 43180
+2026-02-09T17:43:42.801701+01:00 vmi2763474 sshd[85836]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:43:42.803884+01:00 vmi2763474 sshd[85836]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=23.236.169.187 
+2026-02-09T17:43:44.985342+01:00 vmi2763474 sshd[85836]: Failed password for invalid user jtribino from 23.236.169.187 port 43180 ssh2
+2026-02-09T17:43:52.253762+01:00 vmi2763474 sshd[85948]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=101.36.107.233  user=root
+2026-02-09T17:43:54.475310+01:00 vmi2763474 sshd[85948]: Failed password for root from 101.36.107.233 port 37374 ssh2
+2026-02-09T17:43:56.642278+01:00 vmi2763474 sshd[85948]: Received disconnect from 101.36.107.233 port 37374:11: Bye Bye [preauth]
+2026-02-09T17:43:56.642807+01:00 vmi2763474 sshd[85948]: Disconnected from authenticating user root 101.36.107.233 port 37374 [preauth]
+2026-02-09T17:44:03.179892+01:00 vmi2763474 sshd[86092]: Invalid user ai from 188.166.181.23 port 35840
+2026-02-09T17:44:03.189976+01:00 vmi2763474 sshd[86092]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:44:03.193578+01:00 vmi2763474 sshd[86092]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=188.166.181.23 
+2026-02-09T17:44:05.257652+01:00 vmi2763474 sshd[86092]: Failed password for invalid user ai from 188.166.181.23 port 35840 ssh2
+2026-02-09T17:44:06.246688+01:00 vmi2763474 sshd[86092]: Received disconnect from 188.166.181.23 port 35840:11: Bye Bye [preauth]
+2026-02-09T17:44:06.247153+01:00 vmi2763474 sshd[86092]: Disconnected from invalid user ai 188.166.181.23 port 35840 [preauth]
+2026-02-09T17:44:19.445308+01:00 vmi2763474 sshd[86204]: Invalid user ubuntu from 14.63.196.175 port 51044
+2026-02-09T17:44:19.449098+01:00 vmi2763474 sshd[86204]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:44:19.449313+01:00 vmi2763474 sshd[86204]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=14.63.196.175 
+2026-02-09T17:44:21.382988+01:00 vmi2763474 sshd[86204]: Failed password for invalid user ubuntu from 14.63.196.175 port 51044 ssh2
+2026-02-09T17:44:23.375400+01:00 vmi2763474 sshd[86204]: Received disconnect from 14.63.196.175 port 51044:11: Bye Bye [preauth]
+2026-02-09T17:44:23.375719+01:00 vmi2763474 sshd[86204]: Disconnected from invalid user ubuntu 14.63.196.175 port 51044 [preauth]
+2026-02-09T17:44:33.747375+01:00 vmi2763474 sshd[86251]: Invalid user ubuntu from 14.63.196.175 port 35262
+2026-02-09T17:44:33.761943+01:00 vmi2763474 sshd[86251]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:44:33.762235+01:00 vmi2763474 sshd[86251]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=14.63.196.175 
+2026-02-09T17:44:36.283743+01:00 vmi2763474 sshd[86251]: Failed password for invalid user ubuntu from 14.63.196.175 port 35262 ssh2
+2026-02-09T17:44:37.628311+01:00 vmi2763474 sshd[86343]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=101.36.107.233  user=root
+2026-02-09T17:44:38.435774+01:00 vmi2763474 sshd[86251]: Received disconnect from 14.63.196.175 port 35262:11: Bye Bye [preauth]
+2026-02-09T17:44:38.436052+01:00 vmi2763474 sshd[86251]: Disconnected from invalid user ubuntu 14.63.196.175 port 35262 [preauth]
+2026-02-09T17:44:39.698487+01:00 vmi2763474 sshd[86343]: Failed password for root from 101.36.107.233 port 52540 ssh2
+2026-02-09T17:44:42.065080+01:00 vmi2763474 sshd[86343]: Received disconnect from 101.36.107.233 port 52540:11: Bye Bye [preauth]
+2026-02-09T17:44:42.066174+01:00 vmi2763474 sshd[86343]: Disconnected from authenticating user root 101.36.107.233 port 52540 [preauth]
+2026-02-09T17:45:01.037205+01:00 vmi2763474 CRON[87209]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-02-09T17:45:01.044349+01:00 vmi2763474 CRON[87209]: pam_unix(cron:session): session closed for user root
+2026-02-09T17:45:21.170852+01:00 vmi2763474 sshd[87322]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=101.36.107.233  user=root
+2026-02-09T17:45:23.279160+01:00 vmi2763474 sshd[87322]: Failed password for root from 101.36.107.233 port 12702 ssh2
+2026-02-09T17:45:25.580955+01:00 vmi2763474 sshd[87322]: Received disconnect from 101.36.107.233 port 12702:11: Bye Bye [preauth]
+2026-02-09T17:45:25.581316+01:00 vmi2763474 sshd[87322]: Disconnected from authenticating user root 101.36.107.233 port 12702 [preauth]
+2026-02-09T17:45:38.910744+01:00 vmi2763474 sshd[87467]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=37.60.225.54  user=root
+2026-02-09T17:45:38.945203+01:00 vmi2763474 sshd[87465]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=37.60.225.54  user=root
+2026-02-09T17:45:38.958696+01:00 vmi2763474 sshd[87471]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=37.60.225.54  user=root
+2026-02-09T17:45:38.960204+01:00 vmi2763474 sshd[87466]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=37.60.225.54  user=root
+2026-02-09T17:45:40.687164+01:00 vmi2763474 sshd[87467]: Failed password for root from 37.60.225.54 port 57596 ssh2
+2026-02-09T17:45:40.722070+01:00 vmi2763474 sshd[87465]: Failed password for root from 37.60.225.54 port 57572 ssh2
+2026-02-09T17:45:40.737453+01:00 vmi2763474 sshd[87471]: Failed password for root from 37.60.225.54 port 57618 ssh2
+2026-02-09T17:45:40.738376+01:00 vmi2763474 sshd[87466]: Failed password for root from 37.60.225.54 port 57584 ssh2
+2026-02-09T17:45:41.069183+01:00 vmi2763474 sshd[87465]: Connection closed by authenticating user root 37.60.225.54 port 57572 [preauth]
+2026-02-09T17:45:41.082498+01:00 vmi2763474 sshd[87467]: Connection closed by authenticating user root 37.60.225.54 port 57596 [preauth]
+2026-02-09T17:45:41.134540+01:00 vmi2763474 sshd[87466]: Connection closed by authenticating user root 37.60.225.54 port 57584 [preauth]
+2026-02-09T17:45:41.138700+01:00 vmi2763474 sshd[87471]: Connection closed by authenticating user root 37.60.225.54 port 57618 [preauth]
+2026-02-09T17:45:42.296115+01:00 vmi2763474 sshd[87649]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=91.92.199.36  user=root
+2026-02-09T17:45:44.618768+01:00 vmi2763474 sshd[87649]: Failed password for root from 91.92.199.36 port 35634 ssh2
+2026-02-09T17:45:46.562893+01:00 vmi2763474 sshd[87649]: Received disconnect from 91.92.199.36 port 35634:11: Bye Bye [preauth]
+2026-02-09T17:45:46.563435+01:00 vmi2763474 sshd[87649]: Disconnected from authenticating user root 91.92.199.36 port 35634 [preauth]
+2026-02-09T17:46:03.574818+01:00 vmi2763474 sshd[88208]: Invalid user taibabi from 101.36.107.233 port 27868
+2026-02-09T17:46:03.582195+01:00 vmi2763474 sshd[88208]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:46:03.582459+01:00 vmi2763474 sshd[88208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=101.36.107.233 
+2026-02-09T17:46:05.788564+01:00 vmi2763474 sshd[88208]: Failed password for invalid user taibabi from 101.36.107.233 port 27868 ssh2
+2026-02-09T17:46:26.020805+01:00 vmi2763474 sshd[89184]: Invalid user user from 91.92.199.36 port 52192
+2026-02-09T17:46:26.027684+01:00 vmi2763474 sshd[89184]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:46:26.027912+01:00 vmi2763474 sshd[89184]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=91.92.199.36 
+2026-02-09T17:46:28.059709+01:00 vmi2763474 sshd[89184]: Failed password for invalid user user from 91.92.199.36 port 52192 ssh2
+2026-02-09T17:46:28.144501+01:00 vmi2763474 sshd[89184]: Received disconnect from 91.92.199.36 port 52192:11: Bye Bye [preauth]
+2026-02-09T17:46:28.144749+01:00 vmi2763474 sshd[89184]: Disconnected from invalid user user 91.92.199.36 port 52192 [preauth]
+2026-02-09T17:46:32.388041+01:00 vmi2763474 sshd[89189]: Connection closed by 81.177.101.45 port 41214
+2026-02-09T17:46:40.924081+01:00 vmi2763474 sshd[89190]: Invalid user zj from 81.177.101.45 port 41568
+2026-02-09T17:46:42.187812+01:00 vmi2763474 sshd[89190]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:46:42.188027+01:00 vmi2763474 sshd[89190]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=81.177.101.45 
+2026-02-09T17:46:43.748631+01:00 vmi2763474 sshd[89190]: Failed password for invalid user zj from 81.177.101.45 port 41568 ssh2
+2026-02-09T17:46:45.241514+01:00 vmi2763474 sshd[89195]: Invalid user shivam from 94.103.3.8 port 46056
+2026-02-09T17:46:45.246298+01:00 vmi2763474 sshd[89195]: pam_unix(sshd:auth): check pass; user unknown
+2026-02-09T17:46:45.246511+01:00 vmi2763474 sshd[89195]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=94.103.3.8 
+2026-02-09T17:46:47.238550+01:00 vmi2763474 sshd[89190]: Connection closed by invalid user zj 81.177.101.45 port 41568 [preauth]
+2026-02-09T17:46:47.555946+01:00 vmi2763474 sshd[89195]: Failed password for invalid user shivam from 94.103.3.8 port 46056 ssh2
+2026-02-09T17:46:48.034989+01:00 vmi2763474 sshd[89195]: Received disconnect from 94.103.3.8 port 46056:11: Bye Bye [preauth]
+2026-02-09T17:46:48.035539+01:00 vmi2763474 sshd[89195]: Disconnected from invalid user shivam 94.103.3.8 port 46056 [preauth]
