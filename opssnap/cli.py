@@ -12,7 +12,7 @@ import shutil
 from datetime import datetime
 
 
-def run_ansible(inventory, profile):
+def run_ansible(inventory, profile, provider=None):
     """Execute ansible-playbook with given inventory and profile."""
     cmd = [
         "ansible-playbook",
@@ -20,6 +20,8 @@ def run_ansible(inventory, profile):
         "playbooks/snapshot.yml",
         "-e", f"profile_file={profile}"
     ]
+    if provider:
+        cmd.extend(["-e", f"ai_provider={provider}"])
     print(f"Running: {' '.join(cmd)}")
     try:
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
@@ -70,6 +72,12 @@ def main():
         help="Path to audit profile YAML"
     )
     parser.add_argument(
+        "--provider",
+        choices=["openai", "google"],
+        default="openai",
+        help="AI provider to use for analysis (openai or google)"
+    )
+    parser.add_argument(
         "-z", "--zip",
         action="store_true",
         help="Package output into a zip file after audit"
@@ -90,7 +98,7 @@ def main():
         sys.exit(1)
     
     # Run ansible playbook
-    success = run_ansible(args.inventory, args.profile)
+    success = run_ansible(args.inventory, args.profile, args.provider)
     if not success:
         sys.exit(1)
     

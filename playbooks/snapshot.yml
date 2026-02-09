@@ -25,7 +25,7 @@
     - role: logs_collect
     - role: updates_readonly
     - role: ai_analysis
-      when: openai_api_key is defined and openai_api_key != ''
+      when: (openai_api_key is defined and openai_api_key != '') or (gemini_api_key is defined and gemini_api_key != '')
     - role: reporting
 
   post_tasks:

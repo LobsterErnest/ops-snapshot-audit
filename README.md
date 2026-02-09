@@ -15,25 +15,35 @@ All commands are safe, non‑destructive and can be run on production systems wi
 
 ## AI-Powered Analysis
 
-Adds intelligent analysis of audit data using OpenAI's GPT models. When an OpenAI API key is provided, the `ai_analysis` role processes collected data and generates actionable insights, anomaly detection, and diagnostic recommendations.
+Adds intelligent analysis of audit data using OpenAI's GPT models or Google Gemini. When an AI API key is provided, the `ai_analysis` role processes collected data and generates actionable insights, anomaly detection, and diagnostic recommendations.
 
 ### Configuration
-Set the `openai_api_key` variable in your inventory or pass it as an extra var:
+Set the `openai_api_key` or `gemini_api_key` variable in your inventory or pass it as an extra var:
 
 ```yaml
 # inventory.yml
 all:
   vars:
-    openai_api_key: "your-api-key-here"
+    openai_api_key: "your-api-key-here"   # For OpenAI
+    gemini_api_key: "your-api-key-here"   # For Google Gemini
+    ai_provider: "openai"                 # Optional: "openai" or "google" (defaults to openai)
 ```
 
 or via command line:
 
 ```bash
 ansible-playbook -i inventory.yml -e "openai_api_key=your-api-key-here" playbooks/snapshot.yml
+ansible-playbook -i inventory.yml -e "gemini_api_key=your-api-key-here" -e "ai_provider=google" playbooks/snapshot.yml
 ```
 
-The AI analysis will only run when the key is provided and non‑empty.
+The AI analysis will only run when a corresponding API key is provided and non‑empty.
+
+### Provider Selection
+Use the `--provider` flag with the CLI wrapper to specify which AI provider to use (`openai` or `google`). Default is `openai`.
+
+```bash
+python opssnap/cli.py -i inventory.yml -p profile.yml --provider google
+```
 
 ## Requirements
 
@@ -107,7 +117,7 @@ This ensures the project stays strictly read‑only.
 The `opssnap/cli.py` script provides a convenient command‑line interface:
 
 ```
-usage: cli.py [-h] [-i INVENTORY] [-p PROFILE] [-z] [--zip-name ZIP_NAME]
+usage: cli.py [-h] [-i INVENTORY] [-p PROFILE] [--provider {openai,google}] [-z] [--zip-name ZIP_NAME]
 
 Ops Snapshot Audit - Agentless read‑only Linux audit via SSH
 
@@ -117,6 +127,8 @@ optional arguments:
                         Path to Ansible inventory file
   -p PROFILE, --profile PROFILE
                         Path to audit profile YAML
+  --provider {openai,google}
+                        AI provider to use for analysis (openai or google)
   -z, --zip             Package output into a zip file after audit
   --zip-name ZIP_NAME   Custom name for the zip file
 ```
