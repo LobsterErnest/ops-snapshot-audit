@@ -1,2 +1,0 @@
-Service: sshd - Status: inactive
-Service: cron - Status: active
